@@ -1,0 +1,40 @@
+<template lang="html">
+  <div class="film-wrapper">
+    <film-grid-item v-for="(film, index) in films" :key="index" :film="film" />
+  </div>
+</template>
+
+<script>
+import FilmGridItem from './FilmGridItem'
+import MoviesService from '@/services/MoviesService.js'
+import {eventBus} from '../main.js';
+export default {
+  data(){
+    return {
+      films: []
+    };
+  },
+  mounted(){
+    MoviesService.getMovies()
+    .then(movies => this.films = movies);
+    eventBus.$on("delete-film", (id) => {
+      const index = this.films.findIndex((film) => {
+        film._id === id
+      })
+      this.films.splice(index, 1)
+    })
+  },
+  components: {
+    'film-grid-item': FilmGridItem
+  }
+}
+</script>
+
+<style lang="css" scoped>
+
+.film-wrapper {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+</style>
